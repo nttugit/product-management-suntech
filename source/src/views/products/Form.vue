@@ -1,6 +1,8 @@
 <template>
   <div class="product-info">
-    <div class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center">
+    <div
+      class="pricing-header px-3 py-3 pt-md-5 pb-md-4 mx-auto text-center"
+    >
       <h3 class="display-5">Product Infomation</h3>
       <router-link to="/products">Back</router-link>
     </div>
@@ -8,7 +10,9 @@
     <div class="container">
       <form @submit.prevent="save">
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label"
+          <label
+            for="inputPassword"
+            class="col-sm-3 col-form-label"
             >Product name</label
           >
           <div class="col-sm-9">
@@ -19,13 +23,18 @@
               @blur="validate()"
               :class="{ 'is-invalid': errors.name }"
             />
-            <div class="invalid-feedback" v-if="errors.name">
+            <div
+              class="invalid-feedback"
+              v-if="errors.name"
+            >
               {{ errors.name }}
             </div>
           </div>
         </div>
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label"
+          <label
+            for="inputPassword"
+            class="col-sm-3 col-form-label"
             >Product price</label
           >
           <div class="col-sm-9">
@@ -36,13 +45,18 @@
               @blur="validate()"
               :class="{ 'is-invalid': errors.price }"
             />
-            <div class="invalid-feedback" v-if="errors.price">
+            <div
+              class="invalid-feedback"
+              v-if="errors.price"
+            >
               {{ errors.price }}
             </div>
           </div>
         </div>
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label"
+          <label
+            for="inputPassword"
+            class="col-sm-3 col-form-label"
             >Product description</label
           >
           <div class="col-sm-9">
@@ -54,10 +68,18 @@
           </div>
         </div>
         <div class="form-group row">
-          <label for="inputPassword" class="col-sm-3 col-form-label"></label>
+          <label
+            for="inputPassword"
+            class="col-sm-3 col-form-label"
+          ></label>
           <div class="col-sm-9">
-            <button type="submit" class="btn btn-primary">Save</button> &nbsp;
-            <button type="reset" class="btn btn-danger">Cancel</button>
+            <button type="submit" class="btn btn-primary">
+              Save
+            </button>
+            &nbsp;
+            <button type="reset" class="btn btn-danger">
+              Cancel
+            </button>
           </div>
         </div>
       </form>
@@ -66,19 +88,20 @@
 </template>
 
 <script>
+const rootAPI = process.env.VUE_APP_ROOT_API_LOCAL;
 export default {
-  name: "ProductForm",
+  name: 'ProductForm',
   data() {
     return {
       errors: {
-        name: "",
-        price: "",
-        description: "",
+        name: '',
+        price: '',
+        description: '',
       },
       product: {
-        name: "",
+        name: '',
         price: 0,
-        description: "",
+        description: '',
       },
     };
   },
@@ -86,14 +109,14 @@ export default {
     validate() {
       let isValid = true;
       this.errors = {
-        name: "",
+        name: '',
         price: 0,
-        description: "",
+        description: '',
       };
 
       if (!this.product.name) {
         // set biến để event bắt được và dùng i-if dể show
-        this.errors.name = "Product name is required";
+        this.errors.name = 'Product name is required';
         isValid = false;
       }
 
@@ -106,7 +129,8 @@ export default {
       // }
 
       if (this.product.price <= 0) {
-        this.errors.price = "Product price must be greater than 0";
+        this.errors.price =
+          'Product price must be greater than 0';
         isValid = false;
       }
 
@@ -115,9 +139,20 @@ export default {
     isNumber(value) {
       return /^\d*$/.test(value);
     },
-    save() {
-      const isValid = this.validate();
-      console.log(isValid);
+    async save() {
+      if (this.validate()) {
+        const response = await this.$request.post(
+          `${rootAPI}/products`,
+          this.product
+        );
+        const { data } = await response;
+        if (data.status != 201) {
+          alert('Something went wrong');
+        }
+        console.log(data);
+        this.$router.push({ path: '/products' });
+        // this.$router.push({ name: 'product-list' });
+      }
     },
   },
 };
