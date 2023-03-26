@@ -6,13 +6,22 @@
     </div>
 
     <div class="container">
-      <form @submit.prevent="">
+      <form @submit.prevent="save">
         <div class="form-group row">
           <label for="inputPassword" class="col-sm-3 col-form-label"
             >Product name</label
           >
           <div class="col-sm-9">
-            <input type="text" class="form-control" />
+            <input
+              type="text"
+              class="form-control"
+              v-model="product.name"
+              @blur="validate()"
+              :class="{ 'is-invalid': errors.name }"
+            />
+            <div class="invalid-feedback" v-if="errors.name">
+              {{ errors.name }}
+            </div>
           </div>
         </div>
         <div class="form-group row">
@@ -20,7 +29,16 @@
             >Product price</label
           >
           <div class="col-sm-9">
-            <input type="text" class="form-control" />
+            <input
+              type="number"
+              class="form-control"
+              v-model="product.price"
+              @blur="validate()"
+              :class="{ 'is-invalid': errors.price }"
+            />
+            <div class="invalid-feedback" v-if="errors.price">
+              {{ errors.price }}
+            </div>
           </div>
         </div>
         <div class="form-group row">
@@ -28,7 +46,11 @@
             >Product description</label
           >
           <div class="col-sm-9">
-            <textarea class="form-control" rows="3"></textarea>
+            <textarea
+              class="form-control"
+              rows="3"
+              v-model="product.description"
+            ></textarea>
           </div>
         </div>
         <div class="form-group row">
@@ -42,3 +64,61 @@
     </div>
   </div>
 </template>
+
+<script>
+export default {
+  name: "ProductForm",
+  data() {
+    return {
+      errors: {
+        name: "",
+        price: "",
+        description: "",
+      },
+      product: {
+        name: "",
+        price: 0,
+        description: "",
+      },
+    };
+  },
+  methods: {
+    validate() {
+      let isValid = true;
+      this.errors = {
+        name: "",
+        price: 0,
+        description: "",
+      };
+
+      if (!this.product.name) {
+        // set biến để event bắt được và dùng i-if dể show
+        this.errors.name = "Product name is required";
+        isValid = false;
+      }
+
+      // self-check (no bootstrap)
+      // if (!this.product.price) {
+      //   this.errors.price = "Product price is required";
+      // } else if (!this.isNumber(this.product.price)) {
+      //
+      //   this.errors.price = "Product price must be a number";
+      // }
+
+      if (this.product.price <= 0) {
+        this.errors.price = "Product price must be greater than 0";
+        isValid = false;
+      }
+
+      return isValid;
+    },
+    isNumber(value) {
+      return /^\d*$/.test(value);
+    },
+    save() {
+      const isValid = this.validate();
+      console.log(isValid);
+    },
+  },
+};
+</script>
