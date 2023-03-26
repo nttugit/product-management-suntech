@@ -14,21 +14,15 @@ const routes = [
     path: '/products',
     name: 'product-list',
     component: ProductList,
-    // children: [
-    //   {
-    //     path:'',
-
-    //   },
-    //   {
-    //     path: '/create',
-    //     name: 'product-create',
-    //     component: ProductForm,
-    //   },
-    // ]
   },
   {
     path: '/products/create',
     name: 'product-create',
+    component: ProductForm,
+  },
+  {
+    path: '/products/edit/:id',
+    name: 'product-edit',
     component: ProductForm,
   },
 ]

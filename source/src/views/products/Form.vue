@@ -77,7 +77,11 @@
               Save
             </button>
             &nbsp;
-            <button type="reset" class="btn btn-danger">
+            <button
+              type="reset"
+              class="btn btn-danger"
+              @click="cancel"
+            >
               Cancel
             </button>
           </div>
@@ -88,7 +92,7 @@
 </template>
 
 <script>
-const rootAPI = process.env.VUE_APP_ROOT_API_LOCAL;
+const rootAPI = process.env.VUE_APP_ROOT_API;
 export default {
   name: 'ProductForm',
   data() {
@@ -104,6 +108,12 @@ export default {
         description: '',
       },
     };
+  },
+  created() {
+    const productId = this.$route.params.id;
+    if (productId) {
+      this.getOne(productId);
+    }
   },
   methods: {
     validate() {
@@ -141,18 +151,47 @@ export default {
     },
     async save() {
       if (this.validate()) {
-        const response = await this.$request.post(
-          `${rootAPI}/products`,
-          this.product
-        );
-        const { data } = await response;
-        if (data.status != 201) {
-          alert('Something went wrong');
+        const productId = this.product.id;
+        if (!productId) {
+          const postEndPoint = `${rootAPI}/products`;
+          const response = await this.$request.post(
+            postEndPoint,
+            this.product
+          );
+          const { data } = await response;
+          if (data.status != 201) {
+            alert('Something went wrong');
+          }
+        } else {
+          const putEndPoint = `${rootAPI}/products/${productId}`;
+          const response = await this.$request.put(
+            putEndPoint,
+            this.product
+          );
+          const { data } = await response;
+          if (data.status != 200) {
+            alert('Something went wrong');
+          }
         }
-        console.log(data);
-        this.$router.push({ path: '/products' });
+
         // this.$router.push({ name: 'product-list' });
+        this.$router.push({ path: '/products' });
       }
+    },
+    async getOne(productId) {
+      const endPoint = `${rootAPI}/products/${productId}`;
+      const { data } = await this.$request.get(endPoint);
+      if (data.status === 200) {
+        this.product = data.data;
+      }
+    },
+    cancel() {
+      this.product = {
+        id: this.product.id,
+        name: '',
+        price: 0,
+        description: '',
+      };
     },
   },
 };

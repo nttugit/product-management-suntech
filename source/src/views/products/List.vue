@@ -31,9 +31,14 @@
               <td>{{ product.name }}</td>
               <td>{{ product.price }}</td>
               <td>
-                <i
-                  class="fa-solid fa-pen-to-square action-icon"
-                ></i>
+                <router-link
+                  :to="`/products/edit/${product.id}`"
+                >
+                  <i
+                    class="fa-solid fa-pen-to-square action-icon"
+                  ></i>
+                </router-link>
+
                 <i
                   class="fa-solid fa-trash action-icon"
                   @click="onDelete(product.id)"
@@ -48,7 +53,7 @@
 </template>
 
 <script>
-const rootAPI = process.env.VUE_APP_ROOT_API_LOCAL;
+const rootAPI = process.env.VUE_APP_ROOT_API;
 export default {
   name: 'ProductList',
   data() {
@@ -66,7 +71,6 @@ export default {
         `${rootAPI}/products`
       );
       if (data.data.length > 0) {
-        console.log(data);
         this.products = data.data;
       }
     },
@@ -110,6 +114,7 @@ export default {
 
 <style>
 .action-icon {
+  color: #000000;
   padding: 10px;
   /* margin-left: 10px; */
   border-radius: 10px;
